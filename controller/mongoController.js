@@ -14,30 +14,36 @@ module.exports = {
     if (!errors.isEmpty()) {
       res.send(errors.errors[0].msg)
     } else {
-      const url = `https://api.github.com/users/${loginname}`
-      const html_url = `https://github.com/${loginname}`
-      const repos_url = `https://api.github.com/users/${loginname}/repos`
-      var user = new userModel({
-        login: loginname,
-        url: url,
-        html_url: html_url,
-        repos_url: repos_url
-      })
-      var userDetails = new userDetailsModel({
-        login: loginname,
-        url: url,
-        html_url: html_url,
-        repos_url: repos_url,
-        name: username
-      })
-
-      await user.save((err, data) => {
+      const userdetail = userDetailsModel.find({ login: loginname })
+      await userdetail.exec((err, data) => {
         if (err) throw err
-      })
+        if (data.length) { res.send('Login Name Exist') } else {
+          const url = `https://api.github.com/users/${loginname}`
+          const html_url = `https://github.com/${loginname}`
+          const repos_url = `https://api.github.com/users/${loginname}/repos`
+          var user = new userModel({
+            login: loginname,
+            url: url,
+            html_url: html_url,
+            repos_url: repos_url
+          })
+          var userDetails = new userDetailsModel({
+            login: loginname,
+            url: url,
+            html_url: html_url,
+            repos_url: repos_url,
+            name: username
+          })
 
-      userDetails.save((err, data) => {
-        if (err) throw err
-        res.send(userDetails)
+          user.save((err, data) => {
+            if (err) throw err
+          })
+
+          userDetails.save((err, data) => {
+            if (err) throw err
+            res.send(userDetails)
+          })
+        }
       })
     }
   },
