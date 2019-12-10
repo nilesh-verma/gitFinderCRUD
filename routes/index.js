@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var userModel =require('../models/user')
+var userModel =require('../models/user');
+var reposModel = require('../models/reposDetails');
 
 /* GET home page. */
-router.post('/', function(req, res, next) {
+router.post('/user', function(req, res) {
   let loginname = req.body.login;
   let url=`https://api.github.com/users/${loginname}`;
   let html_url=`https://github.com/${loginname}`;
@@ -16,8 +17,25 @@ router.post('/', function(req, res, next) {
   });
   user.save((err,data)=>{
     if(err) throw err;
-    res.send("uploaded");
+    res.send(user);
   })
+});
+
+router.post('/repos',(req,res)=>{
+  let loginname = req.body.login;
+  let reposname = req.body.name;
+  let html_url = `https://github.com/${loginname}/${reposname}`;
+  var reposDetails = new reposModel({
+    login:loginname,
+    name:reposname,
+    html_url:html_url
+  });
+  reposDetails.save((err,data)=>{
+    if(err) throw err;
+    res.send(reposDetails);
+
+  })
+
 });
 
 module.exports = router;
