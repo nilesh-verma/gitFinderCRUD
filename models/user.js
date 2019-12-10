@@ -11,9 +11,9 @@ var userSchema = new mongoose.Schema({
     },
     id:{
         type:Number,
-        required:true,
+        required:false,
         index:{
-            unique:true
+            unique:false
         },
     },
     url:{
@@ -40,4 +40,4 @@ var userSchema = new mongoose.Schema({
 });
 
 var userModel = mongoose.model('users',userSchema);
-module.exports.userModel;
+module.exports=userModel;
