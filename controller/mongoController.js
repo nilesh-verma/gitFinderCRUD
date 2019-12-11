@@ -1,9 +1,9 @@
 /* eslint-disable camelcase */
 /* eslint-disable new-cap */
-var userModel = require('../models/user')
-var reposModel = require('../models/reposDetails')
-var userDetailsModel = require('../models/userDetails')
-var { validationResult } = require('express-validator')
+const userModel = require('../models/user')
+const reposModel = require('../models/reposDetails')
+const userDetailsModel = require('../models/userDetails')
+const { validationResult } = require('express-validator')
 
 module.exports = {
 
@@ -21,13 +21,13 @@ module.exports = {
           const url = `https://api.github.com/users/${loginname}`
           const html_url = `https://github.com/${loginname}`
           const repos_url = `https://api.github.com/users/${loginname}/repos`
-          var user = new userModel({
+          const user = new userModel({
             login: loginname,
             url: url,
             html_url: html_url,
             repos_url: repos_url
           })
-          var userDetails = new userDetailsModel({
+          const userDetails = new userDetailsModel({
             login: loginname,
             url: url,
             html_url: html_url,
@@ -41,7 +41,7 @@ module.exports = {
 
           userDetails.save((err, data) => {
             if (err) throw err
-            res.send('User Added! \n\n'+data)
+            res.send('User Added! \n\n' + data)
           })
         }
       })
@@ -65,14 +65,14 @@ module.exports = {
             if (err) throw err
             if (result.length) res.send('Repository Name Exist')
             else {
-              var reposDetails = new reposModel({
+              const reposDetails = new reposModel({
                 login: loginname,
                 name: reposname,
                 html_url: html_url
               })
               reposDetails.save((err, data) => {
                 if (err) throw err
-                res.send("Repository Added!")
+                res.send('Repository Added!')
               })
             }
           })
@@ -82,7 +82,7 @@ module.exports = {
   },
 
   alluser: async (req, res) => {
-    const userlist = userModel.find({})    
+    const userlist = userModel.find({})
     await userlist.exec((err, data) => {
       if (err) throw err
       res.send(data)
@@ -94,7 +94,7 @@ module.exports = {
     const userdetail = userDetailsModel.find({ login: userId })
     await userdetail.exec((err, data) => {
       if (err) throw err
-      if(!data.length) res.send('User Not Found')
+      if (!data.length) res.send('User Not Found')
       else res.send(data)
     })
   },
@@ -104,7 +104,7 @@ module.exports = {
     const repos = reposModel.find({ login: userId })
     await repos.exec((err, data) => {
       if (err) throw err
-      if(!data.length) res.send('No Repository Found')
+      if (!data.length) res.send('No Repository Found')
       else res.send(data)
     })
   },
@@ -112,50 +112,49 @@ module.exports = {
   updateuserDetails: async (req, res) => {
     const errors = validationResult(req)
     const userId = req.body.userId
-    if(!errors.isEmpty()) res.send(errors.errors[0].msg)
+    if (!errors.isEmpty()) res.send(errors.errors[0].msg)
     else {
-    const userdetail = userDetailsModel.findOneAndUpdate({login:userId},{ 
-      name: req.body.name,
-      company: req.body.company,
-      blog: req.body.blog,
-      location: req.body.location,
-      email: req.body.email
-    })
-    await userdetail.exec((err, data) => {
-      if (err) throw res.send(err.message)
-      if(!data) res.send('user not found')    
-      else res.send('Details updated')
-    })
-  }
+      const userdetail = userDetailsModel.findOneAndUpdate({ login: userId }, {
+        name: req.body.name,
+        company: req.body.company,
+        blog: req.body.blog,
+        location: req.body.location,
+        email: req.body.email
+      })
+      await userdetail.exec((err, data) => {
+        if (err) throw res.send(err.message)
+        if (!data) res.send('user not found')
+        else res.send('Details updated')
+      })
+    }
   },
 
   deleteRepos: async (req, res) => {
     const userId = req.body.userId
     const reposName = req.body.reposName
-    const deleteRepos = reposModel.findOneAndDelete({login:userId,name:reposName})
-    await deleteRepos.exec((err,data) => {
-      if(err) throw err
-      if(!data) res.send('Repository Not Found, Check loginId/reposName.')
-      else res.send(reposName +' Deleted!')
+    const deleteRepos = reposModel.findOneAndDelete({ login: userId, name: reposName })
+    await deleteRepos.exec((err, data) => {
+      if (err) throw err
+      if (!data) res.send('Repository Not Found, Check loginId/reposName.')
+      else res.send(reposName + ' Deleted!')
     })
   },
-  
+
   deleteUser: async (req, res) => {
     const userId = req.body.userId
-    const deleteUser = userModel.findOneAndDelete({login:userId})
+    const deleteUser = userModel.findOneAndDelete({ login: userId })
     await deleteUser.exec((err, data) => {
-      if(err) throw err
-      if(!data) res.send('No User Found!')
+      if (err) throw err
+      if (!data) res.send('No User Found!')
       else {
-        userDetailsModel.findOneAndDelete({login:userId}).exec((err,data) => {
+        userDetailsModel.findOneAndDelete({ login: userId }).exec((err, data) => {
           if (err) throw err
         })
-        reposModel.deleteMany({login:userId}).exec((err,data) => {
-          if (err) throw err 
+        reposModel.deleteMany({ login: userId }).exec((err, data) => {
+          if (err) throw err
         })
         res.send('User Deleted!')
-
-      } 
+      }
     })
   }
 }
