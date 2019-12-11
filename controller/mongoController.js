@@ -9,7 +9,7 @@ module.exports = {
 
   adduser: async (req, res) => {
     const errors = validationResult(req)
-    const loginname = req.body.login
+    const loginname = req.body.userId
     const username = req.body.name
     if (!errors.isEmpty()) {
       res.send(errors.errors[0].msg)
@@ -41,7 +41,7 @@ module.exports = {
 
           userDetails.save((err, data) => {
             if (err) throw err
-            res.send(userDetails)
+            res.send('User Added! \n\n'+data)
           })
         }
       })
@@ -50,8 +50,8 @@ module.exports = {
 
   addRepos: async (req, res) => {
     const errors = validationResult(req)
-    const loginname = req.body.login
-    const reposname = req.body.name
+    const loginname = req.body.loginId
+    const reposname = req.body.reposName
     const html_url = `https://github.com/${loginname}/${reposname}`
     if (!errors.isEmpty()) {
       res.send(errors.errors[0].msg)
@@ -59,7 +59,6 @@ module.exports = {
       const userdetail = userDetailsModel.find({ login: loginname })
       await userdetail.exec((err, data) => {
         if (err) throw err
-        console.log(data)
         if (!data.length) { res.send('User not find') } else {
           const repos = reposModel.find({ login: loginname, name: reposname })
           repos.exec((err, result) => {
@@ -73,7 +72,7 @@ module.exports = {
               })
               reposDetails.save((err, data) => {
                 if (err) throw err
-                res.send(reposDetails)
+                res.send("Repository Added!")
               })
             }
           })
@@ -91,18 +90,18 @@ module.exports = {
   },
 
   userDetails: async (req, res) => {
-    const login = req.params.login
-    console.log(req.body.name)  
-    const userdetail = userDetailsModel.find({ login: login })
+    const userId = req.params.userId
+    const userdetail = userDetailsModel.find({ login: userId })
     await userdetail.exec((err, data) => {
       if (err) throw err
-      res.send(data)
+      if(!data.length) res.send('User Not Found')
+      else res.send(data)
     })
   },
 
   userRepos: async (req, res) => {
-    const login = req.params.login
-    const repos = reposModel.find({ login: login })
+    const userId = req.params.userId
+    const repos = reposModel.find({ login: userId })
     await repos.exec((err, data) => {
       if (err) throw err
       if(!data.length) res.send('No Repository Found')
@@ -111,7 +110,10 @@ module.exports = {
   },
 
   updateuserDetails: async (req, res) => {
-    const userId = req.params.userId
+    const errors = validationResult(req)
+    const userId = req.body.userId
+    if(!errors.isEmpty()) res.send(errors.errors[0].msg)
+    else {
     const userdetail = userDetailsModel.findOneAndUpdate({login:userId},{ 
       name: req.body.name,
       company: req.body.company,
@@ -121,10 +123,10 @@ module.exports = {
     })
     await userdetail.exec((err, data) => {
       if (err) throw res.send(err.message)
-      console.log(data)
       if(!data) res.send('user not found')    
       else res.send('Details updated')
     })
+  }
   },
 
   deleteRepos: async (req, res) => {
@@ -138,4 +140,22 @@ module.exports = {
     })
   },
   
+  deleteUser: async (req, res) => {
+    const userId = req.body.userId
+    const deleteUser = userModel.findOneAndDelete({login:userId})
+    await deleteUser.exec((err, data) => {
+      if(err) throw err
+      if(!data) res.send('No User Found!')
+      else {
+        userDetailsModel.findOneAndDelete({login:userId}).exec((err,data) => {
+          if (err) throw err
+        })
+        reposModel.deleteMany({login:userId}).exec((err,data) => {
+          if (err) throw err 
+        })
+        res.send('User Deleted!')
+
+      } 
+    })
+  }
 }
