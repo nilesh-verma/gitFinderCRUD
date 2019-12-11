@@ -83,7 +83,7 @@ module.exports = {
   },
 
   alluser: async (req, res) => {
-    const userlist = userModel.find({})
+    const userlist = userModel.find({})    
     await userlist.exec((err, data) => {
       if (err) throw err
       res.send(data)
@@ -92,6 +92,7 @@ module.exports = {
 
   userDetails: async (req, res) => {
     const login = req.params.login
+    console.log(req.body.name)  
     const userdetail = userDetailsModel.find({ login: login })
     await userdetail.exec((err, data) => {
       if (err) throw err
@@ -104,8 +105,38 @@ module.exports = {
     const repos = reposModel.find({ login: login })
     await repos.exec((err, data) => {
       if (err) throw err
-      res.send(data)
+      if(!data.length) res.send('No Repository Found')
+      else res.send(data)
     })
-  }
+  },
+
+  updateuserDetails: async (req, res) => {
+    const userId = req.params.userId
+    const userdetail = userDetailsModel.findOneAndUpdate({login:userId},{ 
+      name: req.body.name,
+      company: req.body.company,
+      blog: req.body.blog,
+      location: req.body.location,
+      email: req.body.email
+    })
+    await userdetail.exec((err, data) => {
+      if (err) throw res.send(err.message)
+      console.log(data)
+      if(!data) res.send('user not found')    
+      else res.send('Details updated')
+    })
+  },
+
+  deleteRepos: async (req, res) => {
+    const userId = req.body.userId
+    const reposName = req.body.reposName
+    const deleteRepos = reposModel.findOneAndDelete({login:userId,name:reposName})
+    await deleteRepos.exec((err,data) => {
+      if(err) throw err
+      if(!data) res.send('Repository Not Found, Check loginId/reposName.')
+      else res.send(reposName +' Deleted!')
+    })
+  },
+  
 
 }

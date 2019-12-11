@@ -23,4 +23,12 @@ router.get('/user/:login/repos', (req, res) => {
   mongoController.userRepos(req, res)
 })
 
+router.post('/update/:userId', (req, res) => {
+  mongoController.updateuserDetails(req, res)
+})
+
+router.post('/delete', (req, res) => {
+  mongoController.deleteRepos(req, res)
+})
+
 module.exports = router
