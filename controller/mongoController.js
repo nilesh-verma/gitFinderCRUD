@@ -91,7 +91,12 @@ module.exports = {
     try{
       const errors = validationResult(req)
       const userId = req.body.userId
-      if (!errors.isEmpty()) res.send(errors.errors[0].msg)
+      if (!errors.isEmpty()) {
+        let validationError= errors.errors.map((value) => {
+          return value.msg+"\n";
+        })
+        res.send(validationError)
+      } 
       else {
         const userdetail = userDetailsModel.findOneAndUpdate({ login: userId }, {
           name: req.body.name,

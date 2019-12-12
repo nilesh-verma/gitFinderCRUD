@@ -24,5 +24,8 @@
   "bugs": {
     "url": "https://github.com/nilesh-verma/gitFinderCRUD/issues"
   },
-  "homepage": "https://github.com/nilesh-verma/gitFinderCRUD#readme"
+  "homepage": "https://github.com/nilesh-verma/gitFinderCRUD#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
 }
