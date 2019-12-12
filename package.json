@@ -14,13 +14,6 @@
   },
   "description": "GitFinder App\r     This is a learning purpose app in Node JS which includes all CRUD operation.",
   "main": "app.js",
-  "devDependencies": {
-    "eslint-config-standard": "^14.1.0",
-    "eslint-plugin-import": "^2.19.1",
-    "eslint-plugin-node": "^10.0.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nilesh-verma/gitFinderCRUD.git"
