@@ -1,7 +1,5 @@
 /* eslint-disable new-cap */
 const mongoose = require('mongoose')
-const connection = require('../connection/connection')
-connection.mongo_connection()
 const reposSchema = new mongoose.Schema({
   login: {
     type: String,

@@ -8,7 +8,7 @@ const forAddUser = require('../service/addUserService')
 const forAddRepos = require('../service/addReposService')
 module.exports = {
 
-  adduser: async (req, res) => {
+  adduser: (req, res) => {
     try{
       const errors = validationResult(req)
       const loginname = req.body.userId
@@ -17,15 +17,14 @@ module.exports = {
         res.send(errors.errors[0].msg)
       } 
       else 
-          await forAddUser.userAdded(loginname,username,res)           
-              
+         forAddUser.userAdded(loginname,username,res)            
     }catch(error){
       res.send('Error:'+error)
     } 
 
   },
 
-  addRepos: async (req, res) => {
+  addRepos: (req, res) => {
     const errors = validationResult(req)
     const loginname = req.body.loginId
     const reposname = req.body.reposName
@@ -37,10 +36,10 @@ module.exports = {
     }
   },
 
-  alluser: async (req, res) => {
+  alluser: (req, res) => {
     try{
       const userlist = userModel.find({})
-      await userlist.exec((err, data) => {
+      userlist.exec((err, data) => {
         if (err) throw err
         res.send(data)
       })
@@ -51,27 +50,28 @@ module.exports = {
 
   },
 
-  userDetails: async (req, res) => {
-    try{
-      const userId = req.params.userId
-      const userdetail = userDetailsModel.find({ login: userId })
-      await userdetail.exec((err, data) => {
-        if (err) throw err
-        if (!data.length) res.send('User Not Found')
-        else res.send(data)
+  userDetails :(req,res)=>{ 
+    return new Promise((resolve,reject)=>{
+            const userId = req.params.userId
+            const userdetail = userDetailsModel.find({ login: userId })
+            userdetail.exec((err, data) => {
+            if (err) reject(err)
+            else resolve(data)        
+          })
+      }).then(data =>{
+      if (!data.length) res.send('User Not Found')
+      else res.send(data)
+      }).catch(err=>{
+          throw err
       })
-    }
-    catch(error){
-      res.send('Error:'+error)
-    }
+    },
 
-  },
-
-  userRepos: async (req, res) => {
+    
+  userRepos: (req, res) => {
     try{
       const userId = req.params.userId
       const repos = reposModel.find({ login: userId })
-      await repos.exec((err, data) => {
+      repos.exec((err, data) => {
         if (err) throw err
         if (!data.length) res.send('No Repository Found')
         else res.send(data)
@@ -83,7 +83,7 @@ module.exports = {
 
   },
 
-  updateuserDetails: async (req, res) => {
+  updateuserDetails: (req, res) => {
     try{
       const errors = validationResult(req)
       const userId = req.body.userId
@@ -101,7 +101,7 @@ module.exports = {
           location: req.body.location,
           email: req.body.email
         })
-        await userdetail.exec((err, data) => {
+         userdetail.exec((err, data) => {
           if (err) throw res.send(err.message)
           if (!data) res.send('user not found')
           else res.send('Details updated')
@@ -114,12 +114,12 @@ module.exports = {
 
   },
 
-  deleteRepos: async (req, res) => {
+  deleteRepos: (req, res) => {
     try{
       const userId = req.body.userId
       const reposName = req.body.reposName
       const deleteRepos = reposModel.findOneAndDelete({ login: userId, name: reposName })
-      await deleteRepos.exec((err, data) => {
+      deleteRepos.exec((err, data) => {
         if (err) throw err
         if (!data) res.send('Repository Not Found, Check loginId/reposName.')
         else res.send(reposName + ' Deleted!')
@@ -131,11 +131,11 @@ module.exports = {
 
   },
 
-  deleteUser: async (req, res) => {
+  deleteUser: (req, res) => {
     try{
       const userId = req.body.userId
       const deleteUser = userModel.findOneAndDelete({ login: userId })
-      await deleteUser.exec((err, data) => {
+      deleteUser.exec((err, data) => {
         if (err) throw err
         if (!data) res.send('No User Found!')
         else {

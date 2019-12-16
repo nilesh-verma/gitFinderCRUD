@@ -6,6 +6,9 @@ const env_Var = require('./config/env.json')
 const app = express()
 const port = env_Var.development.node_port
 console.log('PORT'+port)
+
+const connection = require('./connection/connection')
+connection.mongo_connection()
 app.use(bodyParser.json())
 
 app.use(logger('dev'))
