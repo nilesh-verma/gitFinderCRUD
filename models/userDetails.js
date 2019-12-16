@@ -1,6 +1,7 @@
 /* eslint-disable new-cap */
 const mongoose = require('mongoose')
-mongoose.connect('mongodb://localhost:27017/gitFinder', { useNewUrlParser: true })
+const connection = require('../connection/connection')
+connection.mongo_connection()
 const userSchema = new mongoose.Schema({
   login: {
     type: String,

@@ -4,8 +4,8 @@ const userModel = require('../models/user')
 const reposModel = require('../models/reposDetails')
 const userDetailsModel = require('../models/userDetails')
 const { validationResult } = require('express-validator')
-const forAddUser = require('./addUser')
-const forAddRepos = require('./addRepos')
+const forAddUser = require('../service/addUserService')
+const forAddRepos = require('../service/addReposService')
 module.exports = {
 
   adduser: async (req, res) => {
@@ -15,14 +15,10 @@ module.exports = {
       const username = req.body.name
       if (!errors.isEmpty()) {
         res.send(errors.errors[0].msg)
-      } else {
-        const userdetail = userDetailsModel.find({ login: loginname })
-        await userdetail.exec((err, data) => {
-          if (err) throw err
-          if (data.length) { res.send('Login Name Exist') }
-          else { forAddUser.userAdded(loginname,username,res)}             
-        })
-      }
+      } 
+      else 
+          await forAddUser.userAdded(loginname,username,res)           
+              
     }catch(error){
       res.send('Error:'+error)
     } 

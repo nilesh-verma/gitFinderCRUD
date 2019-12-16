@@ -1,7 +1,8 @@
 /* eslint-disable new-cap */
-const mongooose = require('mongoose')
-mongooose.connect('mongodb://localhost:27017/gitFinder', { useNewUrlParser: true })
-const reposSchema = new mongooose.Schema({
+const mongoose = require('mongoose')
+const connection = require('../connection/connection')
+connection.mongo_connection()
+const reposSchema = new mongoose.Schema({
   login: {
     type: String,
     required: true,
@@ -25,5 +26,5 @@ const reposSchema = new mongooose.Schema({
   }
 })
 
-const reposModel = new mongooose.model('repositories', reposSchema)
+const reposModel = new mongoose.model('repositories', reposSchema)
 module.exports = reposModel
